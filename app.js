@@ -2,8 +2,8 @@ import express from "express";
 import session from "express-session";
 import connectDB from "./db/connectDB.js";
 import publicRoutes from './routes/publicRoutes.js'
-// import adminRoutes from './routes/adminRoutes.js'
-
+import adminRoutes from './routes/adminRoutes.js'
+import userRoutes from './routes/UserRoutes.js'
 
 import dotenv from 'dotenv';
 dotenv.config();
@@ -24,8 +24,9 @@ app.use(session(
 ))
 
 
-app.use('/',publicRoutes)
-// app.use('/admin',adminRoutes)
+  app.use('/',publicRoutes)
+  app.use('/admin',adminRoutes)
+  app.use('/',userRoutes)
 
 app.listen(PORT, () => {
   console.log(`server up and listening to ${PORT}`);

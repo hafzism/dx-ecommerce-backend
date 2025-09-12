@@ -1,5 +1,7 @@
 import User from "../models/users.js";
+import Product from "../models/products.js";
 import bcrypt from "bcrypt";
+import Category from "../models/categories.js";
 
 async function registerfn(req, res) {
   try {
@@ -35,6 +37,9 @@ async function loginfn(req, res) {
     if (!user) {
       return res.status(400).json({ error: "no user found" });
     }
+    if(!user.isEnabled){
+      return res.status(400).json({ error: "your account is not enabled" });
+    }
     const matched = await bcrypt.compare(pword, user.password);
     if (!matched) {
       return res.status(400).json({ error: "wrong password" });
@@ -55,4 +60,37 @@ async function loginfn(req, res) {
   }
 }
 
-export { registerfn, loginfn };
+
+async function getProducts(req,res){
+try {
+    const products = await Product.find().select('name')
+    res.status(200).json(products)
+} catch (error) {
+  res.status(500).json({ error: 'serber errror' });
+}
+}
+
+async function getProductsById(req,res) {
+try {
+    const id = req.params.id
+    const products = await Product.findById(id).populate("category");
+        if (!products) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+    res.status(200).json(products)  
+} catch (error) {
+  console.error(error);
+    res.status(500).json({ error: 'serber errror' });
+}
+}
+
+async function getCategories(req,res) {
+try {
+    const categories = await Category.find()
+    res.status(200).json(categories)
+  
+} catch (error) {
+      res.status(500).json({ error: 'serber errror' });
+}
+}
+export { registerfn, loginfn, getProducts,getProductsById,getCategories};

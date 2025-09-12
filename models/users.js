@@ -5,7 +5,8 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true },
   password: { type: String, required: true },
   role: { type: String, enum: ["user", "admin"], default: "user" },
-});
+  isEnabled:{type:Boolean,default:true}
+},{ timestamps: true });
 
-const user = mongoose.model("User", userSchema);
-export default user;
+const User = mongoose.model("User", userSchema);
+export default User;
