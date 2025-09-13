@@ -1,6 +1,6 @@
-import mongoose, { Types } from "mongoose";
+import mongoose from "mongoose";
 const orderSchema = new mongoose.Schema({
-  user_id: { reqired: true, type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  user_id: { required: true, type: mongoose.Schema.Types.ObjectId, ref: "User" },
   items: [
     {
       product_id: {
@@ -8,16 +8,15 @@ const orderSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Product",
       },
-
       quantity: { type: Number, required: true },
-      price: { type: Number, required: true }
-
+      price: { type: Number, required: true },
+      item_total:{ type: Number, required: true }
     },
-  ], //how?,
+  ],
   total_price: { required: true, type: Number },
   status: { type: String, default: "pending" },
   //timestamps
 },{ timestamps: true });
-
+ 
 const Order = mongoose.model("Order", orderSchema);
 export default Order;
