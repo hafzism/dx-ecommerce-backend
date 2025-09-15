@@ -51,7 +51,6 @@ async function loginfn(req, res) {
     }
     req.session.userId = user._id;
     req.session.role = user.role;
-
     return res
       .status(200)
       .json({ message: "login successfull", session: req.session.role });
@@ -88,9 +87,14 @@ async function getCategories(req,res) {
 try {
     const categories = await Category.find()
     res.status(200).json(categories)
-  
 } catch (error) {
       res.status(500).json({ error: 'serber errror' });
 }
 }
-export { registerfn, loginfn, getProducts,getProductsById,getCategories};
+
+function logout(req,res) {
+  req.session.destroy(()=>{
+    res.status(200).json({message:'logout successfull'})
+  })
+}
+export { registerfn, loginfn, getProducts,getProductsById,getCategories,logout};

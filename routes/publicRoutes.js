@@ -7,7 +7,8 @@ import {
   loginfn,
   getProductsById,
   getCategories,
-  getProducts
+  getProducts,
+  logout
 } from "../controllers/publicControllers.js";
 
 router.post("/register", validateRegister, registerfn);
@@ -17,5 +18,6 @@ router.get("/products", getProducts);
 router.get("/products/:id", getProductsById);
 
 router.get("/categories", getCategories);
-
+router.post('/logout',logout)
+ 
 export default router;
