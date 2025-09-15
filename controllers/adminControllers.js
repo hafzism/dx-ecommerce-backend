@@ -145,13 +145,13 @@ export async function adminDeleteCategories(req, res) {
     console.log(error);
     res.status(500).json({ error: "serber errror" });
   }
-} 
+}
 
 //////////////////////////////////////////////////////////////////////////////orders
 
 export async function adminViewOrders(req, res) {
   try {
-    const orders = await Order.find().populate('user_id')
+    const orders = await Order.find().populate("user_id");
     res.status(200).json({ orders });
   } catch (error) {
     console.log(error);
@@ -159,31 +159,70 @@ export async function adminViewOrders(req, res) {
   }
 }
 
-export async function adminUpdateOrders(req,res) {
+export async function adminUpdateOrders(req, res) {
   try {
-    const id = req.params.id
-    const status =  req.body.status
-    const updated = await Order.findByIdAndUpdate(id,{status},{
-      new: true,
-      runValidators: true,
-    })
-    res.json({updated})
+    const id = req.params.id;
+    const status = req.body.status;
+    const updated = await Order.findByIdAndUpdate(
+      id,
+      { status },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    res.json({ updated });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "serber errror" });
   }
 }
 
-export async function adminDeleteOrders(req,res) {
+export async function adminDeleteOrders(req, res) {
   try {
-    const id = req.params.id
-    const deleted = await Order.findByIdAndDelete(id)
-    res.json({deleted})
+    const id = req.params.id;
+    const deleted = await Order.findByIdAndDelete(id);
+    res.json({ deleted });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "serber errror" });
   }
 }
-
 
 /////////////////////////////////////////////////////
+
+export async function adminEnableUsers(req, res) {
+  try {
+    const id = req.params.id;
+    const updated = await User.findByIdAndUpdate(
+      id,
+      { isEnabled: true },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    res.json(updated);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "serber errror" });
+  }
+}
+
+export async function adminDisableUsers(req, res) {
+    try {
+    const id = req.params.id;
+    const updated = await User.findByIdAndUpdate(
+      id,
+      { isEnabled: false },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    res.json(updated);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "serber errror" });
+  }
+}
