@@ -59,7 +59,7 @@ export async function adminAddProducts(req, res) {
       category,
       image,
     });
-    res.status(200).json({ result });
+    res.status(200).json({ result , image: req.file.path});
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "serber errror" });
