@@ -12,11 +12,11 @@ export async function adminloginfn(req, res) {
       return res.status(400).json("user not found");
     }
     if (user.role != "admin") {
-      return res.status(400).json("this page only for admins");
+      return res.status(400).json({ error: "this page only for admins" });
     }
     const hashed = await bcrypt.compare(pword, user.password);
     if (!hashed) {
-      return res.status(400).json("wrong password");
+      return res.status(400).json({ error: "wrong password" });
     }
     req.session.userId = user._id;
     req.session.role = user.role;
@@ -51,28 +51,33 @@ export async function adminViewProducts(req, res) {
 
 export async function adminAddProducts(req, res) {
   try {
-    const { name, price, description, category, image } = req.body;
+    const { name, price, description, category } = req.body;
+
     const result = await Product.create({
       name,
       price,
       description,
       category,
-      image,
+      image: req.file ? `/uploads/${req.file.filename}` : null,
     });
-    res.status(200).json({ result , image: req.file.path});
+
+    res.status(200).json({ success: true, result });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: "serber errror" });
+    res.status(500).json({ error: "server error" });
   }
 }
 
 export async function adminUpdateProducts(req, res) {
   try {
-    const needtoupdate = req.body;
-    const id = req.params.id;
-    const updated = await Product.findByIdAndUpdate(id, needtoupdate, {
+    const { name, category, price, description } = req.body;
+    const updateData = { name, category, price, description };
+    if (req.file) {
+      updateData.image = `/uploads/${req.file.filename}`;
+    }
+
+    const updated = await Product.findByIdAndUpdate(req.params.id, updateData, {
       new: true,
-      runValidators: true,
     });
     res.status(200).json({ updated });
   } catch (error) {
@@ -100,6 +105,17 @@ export async function adminDeleteProducts(req, res) {
 export async function adminViewCategories(req, res) {
   try {
     const result = await Category.find();
+    res.status(200).json({ result });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "serber errror" });
+  }
+}
+
+export async function adminViewSpecificCategories(req, res) {
+  try {
+    const id = req.params.id;
+    const result = await Category.findById(id);
     res.status(200).json({ result });
   } catch (error) {
     console.log(error);
@@ -136,6 +152,14 @@ export async function adminUpdateCategories(req, res) {
 export async function adminDeleteCategories(req, res) {
   try {
     const id = req.params.id;
+    const products = await Product.find({ category: id });
+    if (products.length > 0) {
+      return res
+        .status(400)
+        .json({
+          message: `there's ${products.length} product(s) in this category,so cant delete.`,
+        });
+    }
     const deleted = await Category.findByIdAndDelete(id);
     if (!deleted) {
       return res.status(400).json({ message: "no object found to delete." });
@@ -151,7 +175,9 @@ export async function adminDeleteCategories(req, res) {
 
 export async function adminViewOrders(req, res) {
   try {
-    const orders = await Order.find().populate("user_id");
+    const orders = await Order.find()
+      .populate("user_id")
+      .populate("items.product_id", "name price");
     res.status(200).json({ orders });
   } catch (error) {
     console.log(error);
@@ -210,7 +236,7 @@ export async function adminEnableUsers(req, res) {
 }
 
 export async function adminDisableUsers(req, res) {
-    try {
+  try {
     const id = req.params.id;
     const updated = await User.findByIdAndUpdate(
       id,
@@ -224,5 +250,19 @@ export async function adminDisableUsers(req, res) {
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "serber errror" });
+  }
+}
+
+export async function loadhome(req, res) {
+  try {
+    const userCount = await User.countDocuments();
+    const productCount = await Product.countDocuments();
+    const orderCount = await Order.countDocuments();
+    const categoryCount = await Category.countDocuments();
+    res
+      .status(200)
+      .json({ userCount, productCount, orderCount, categoryCount });
+  } catch (error) {
+    res.status(400).json({ error: "from serverside error" });
   }
 }

@@ -23,5 +23,3 @@ export const validateLogin = [
   body("pword").notEmpty().withMessage("Password is required"),
   handleValidation,
 ];
-
-

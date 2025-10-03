@@ -3,6 +3,18 @@ import Product from "../models/products.js";
 import bcrypt from "bcrypt";
 import Category from "../models/categories.js";
 
+
+function checkauth(req,res){
+  if(req.session && req.session.userId){
+    return res.json({
+      isAuthenticated: true,
+      role: req.session.role,
+      user: req.session.userId,
+    });
+  } else {
+    return res.json({ isAuthenticated: false });
+  }
+};
 async function registerfn(req, res) {
   try {
     const { username, email, password } = req.body;
@@ -97,4 +109,4 @@ function logout(req,res) {
     res.status(200).json({message:'logout successfull'})
   })
 }
-export { registerfn, loginfn, getProducts,getProductsById,getCategories,logout};
+export { registerfn, loginfn, getProducts,getProductsById,getCategories,logout,checkauth};

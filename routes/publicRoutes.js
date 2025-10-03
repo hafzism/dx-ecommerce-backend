@@ -8,12 +8,14 @@ import {
   getProductsById,
   getCategories,
   getProducts,
-  logout
+  logout,
+  checkauth
 } from "../controllers/publicControllers.js";
 
 router.post("/register", validateRegister, registerfn);
 router.post("/login", validateLogin, loginfn);
 
+router.get("/checkauth",checkauth)
 router.get("/products", getProducts);
 router.get("/products/:id", getProductsById);
 
