@@ -74,7 +74,7 @@ async function loginfn(req, res) {
 
 async function getProducts(req,res){
 try {
-    const products = await Product.find().select('name')
+    const products = await Product.find().sort({ createdAt: -1 });
     res.status(200).json(products)
 } catch (error) {
   res.status(500).json({ error: 'serber errror' });
@@ -104,9 +104,29 @@ try {
 }
 }
 
+
+
+
+async function getCategoriesProducts(req,res) {
+try {
+  const catid = req.params.id
+    const products  = await Product.find({category:catid})
+    if (!products.length) {
+      return res.status(404).json({ message: 'No products found for this category' });
+    }
+    res.status(200).json(products)
+} catch (error) {
+      res.status(500).json({ error: 'serber errror' });
+}
+}
+
+
+
+
+
 function logout(req,res) {
-  req.session.destroy(()=>{
+  req.session.destroy(()=>{ 
     res.status(200).json({message:'logout successfull'})
   })
 }
-export { registerfn, loginfn, getProducts,getProductsById,getCategories,logout,checkauth};
+export { registerfn, loginfn, getProducts,getProductsById,getCategories,logout,checkauth,getCategoriesProducts};

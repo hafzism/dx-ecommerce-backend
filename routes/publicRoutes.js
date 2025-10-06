@@ -9,7 +9,8 @@ import {
   getCategories,
   getProducts,
   logout,
-  checkauth
+  checkauth,
+  getCategoriesProducts
 } from "../controllers/publicControllers.js";
 
 router.post("/register", validateRegister, registerfn);
@@ -20,6 +21,8 @@ router.get("/products", getProducts);
 router.get("/products/:id", getProductsById);
 
 router.get("/categories", getCategories);
+router.get("/categories/:id", getCategoriesProducts);
+
 router.post('/logout',logout)
  
 export default router;

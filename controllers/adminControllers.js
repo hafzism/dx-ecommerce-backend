@@ -172,16 +172,17 @@ export async function adminDeleteCategories(req, res) {
 }
 
 //////////////////////////////////////////////////////////////////////////////orders
-
 export async function adminViewOrders(req, res) {
   try {
     const orders = await Order.find()
-      .populate("user_id")
-      .populate("items.product_id", "name price");
-    res.status(200).json({ orders });
+      .populate("user_id", "username email") 
+      .populate("items.product_id", "name price image")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({ success: true, orders });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: "serber errror" });
+    console.error(error);
+    res.status(500).json({ success: false, error: "Server error fetching orders" });
   }
 }
 
@@ -189,20 +190,30 @@ export async function adminUpdateOrders(req, res) {
   try {
     const id = req.params.id;
     const status = req.body.status;
+
+    const allowedStatuses = ["pending", "shipped", "delivered", "cancelled"];
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({ error: "Invalid status value" });
+    }
+
     const updated = await Order.findByIdAndUpdate(
       id,
       { status },
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
+      { new: true, runValidators: true }
+    )
+      .populate("user_id", "username email")
+      .populate("items.product_id", "name price");
+
+    if (!updated) return res.status(404).json({ error: "Order not found" });
+
     res.json({ updated });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: "serber errror" });
+    res.status(500).json({ error: "Server error" });
   }
 }
+
+
 
 export async function adminDeleteOrders(req, res) {
   try {
