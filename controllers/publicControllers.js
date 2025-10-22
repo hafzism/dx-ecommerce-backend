@@ -4,17 +4,19 @@ import bcrypt from "bcrypt";
 import Category from "../models/categories.js";
 
 
-function checkauth(req,res){
-  if(req.session && req.session.userId){
+function checkauth(req, res) {
+  if (req.session && req.session.userId) {
     return res.json({
       isAuthenticated: true,
       role: req.session.role,
       user: req.session.userId,
+      username: req.session.username || req.session.email || "User",
     });
   } else {
     return res.json({ isAuthenticated: false });
   }
-};
+}
+
 async function registerfn(req, res) {
   try {
     const { username, email, password } = req.body;
@@ -63,6 +65,8 @@ async function loginfn(req, res) {
     }
     req.session.userId = user._id;
     req.session.role = user.role;
+    req.session.username = user.username;
+
     return res
       .status(200)
       .json({ message: "login successfull", session: req.session.role });
@@ -95,16 +99,36 @@ try {
 }
 }
 
-async function getCategories(req,res) {
-try {
-    const categories = await Category.find()
-    res.status(200).json(categories)
-} catch (error) {
-      res.status(500).json({ error: 'serber errror' });
-}
-}
+// async function getCategories(req,res) {
+// try {
+//     const categories = await Category.find()
+//     res.status(200).json(categories)
+// } catch (error) {
+//       res.status(500).json({ error: 'serber errror' });
+// }
+// }
 
 
+async function getCategories(req, res) {
+  try {
+    const categories1 = await Category.find();
+
+    // Filter categories that have at least one product
+    const categories = [];
+
+    for (const category of categories1) {
+      const productCount = await Product.countDocuments({ category: category._id });
+      if (productCount > 0) {
+        categories.push(category);
+      }
+    }
+
+    res.status(200).json(categories);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
+}
 
 
 async function getCategoriesProducts(req,res) {

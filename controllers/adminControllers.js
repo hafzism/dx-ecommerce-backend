@@ -51,10 +51,12 @@ export async function adminViewProducts(req, res) {
 
 export async function adminAddProducts(req, res) {
   try {
-    const { name, price, description, category } = req.body;
-
+    console.log(req.body);
+    const { name,author,  price, description, category } = req.body;
+    
     const result = await Product.create({
       name,
+      author,
       price,
       description,
       category,
@@ -70,8 +72,8 @@ export async function adminAddProducts(req, res) {
 
 export async function adminUpdateProducts(req, res) {
   try {
-    const { name, category, price, description } = req.body;
-    const updateData = { name, category, price, description };
+    const { name, author, category, price, description } = req.body;
+    const updateData = { name, category,author, price, description };
     if (req.file) {
       updateData.image = `/uploads/${req.file.filename}`;
     }
