@@ -13,7 +13,7 @@ dotenv.config();
 const app = express();
 app.use(express.json())
 app.use(cors({
-  origin:[ 'http://dx-ecommerce-frontend.s3-website.ap-south-1.amazonaws.com','http://localhost:5173','https://d3ai0wwxkr3sud.cloudfront.net'],
+  origin:[ 'http://dx-ecommerce-frontend.s3-website.ap-south-1.amazonaws.com','http://localhost:5173','https://d3ai0wwxkr3sud.cloudfront.net', "https://litbay.hafzism.in"],
   credentials: true,               
 }));
 const PORT = process.env.PORT;
